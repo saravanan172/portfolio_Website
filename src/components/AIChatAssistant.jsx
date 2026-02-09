@@ -24,6 +24,7 @@ const AIChatAssistant = () => {
         experience: "He specializes in building scalable backend architectures and intelligent software solutions.",
         education: "He holds a BE in Electronics and Communication Engineering.",
         certificates: "Java Full Stack, AI & Machine Learning (Stanford), Google Cloud Fundamentals, and Advanced Spring Boot Microservices.",
+        resume: "/CV_Saravanan.K.pdf",
         contact: "You can reach him professionally through the contact form on this page or via his social links."
     };
 
@@ -44,6 +45,9 @@ const AIChatAssistant = () => {
         if (q.includes('ai') || q.includes('artificial')) return "Artificial Intelligence is a core focus for Saravanan, ranging from model integration to intelligent system design.";
         if (q.includes('certificat') || q.includes('award') || q.includes('course')) {
             return `Saravanan holds several key certifications, including ${saravananInfo.certificates} He is committed to staying at the forefront of technology.`;
+        }
+        if (q.includes('resume') || q.includes('cv') || q.includes('bio') || q.includes('download')) {
+            return `You can download Saravanan's professional resume directly from the Hero section at the top of the page, or I can provide the link here for you. [Download Resume](${saravananInfo.resume})`;
         }
         if (q.includes('leetcode') || q.includes('hackerrank') || q.includes('hacker') || q.includes('solving') || q.includes('platform') || q.includes('practice')) {
             return `Saravanan actively hones his problem-solving skills on platforms like ${saravananInfo.learningPlatforms}. He is passionate about algorithmic challenges and continuous learning.`;

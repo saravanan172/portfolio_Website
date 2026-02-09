@@ -15,7 +15,8 @@ import {
   Server,
   Layers,
   BrainCircuit,
-  Award
+  Award,
+  Download
 } from 'lucide-react';
 import AIChatAssistant from './components/AIChatAssistant';
 
@@ -43,13 +44,13 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-2xl font-display font-bold text-gradient"
+          className="text-2xl font-display font-bold text-gradient uppercase"
         >
-          SARAVANAN
+          {import.meta.env.VITE_APP_TITLE || 'SARAVANAN'}
         </motion.div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-8">
+        <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link, i) => (
             <motion.a
               key={link.name}
@@ -62,6 +63,15 @@ const Navbar = () => {
               {link.name}
             </motion.a>
           ))}
+          <motion.a
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            href="/CV_Saravanan.K.pdf"
+            download
+            className="px-5 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition-all text-sm font-bold"
+          >
+            Resume
+          </motion.a>
         </div>
 
         {/* Mobile Toggle */}
@@ -142,6 +152,13 @@ const Hero = () => {
           >
             <a href="#contact" className="btn-primary">Get In Touch</a>
             <a href="#projects" className="btn-outline">View Projects</a>
+            <a
+              href="/CV_Saravanan.K.pdf"
+              download
+              className="px-6 py-3 rounded-full bg-slate-800 border border-white/10 text-white font-semibold transition-all hover:bg-slate-700 active:scale-95 flex items-center gap-2 shadow-lg"
+            >
+              Download CV <Download size={18} />
+            </a>
           </motion.div>
         </div>
       </div>
