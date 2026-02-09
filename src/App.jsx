@@ -19,8 +19,12 @@ import {
   Download
 } from 'lucide-react';
 import AIChatAssistant from './components/AIChatAssistant';
+import VisitorTracker from './components/VisitorTracker';
+import VisitorDashboard from './components/VisitorDashboard';
 
-const Navbar = () => {
+const Navbar = ({ onShowDashboard }) => {
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -44,6 +48,21 @@ const Navbar = () => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
+          style={{ cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => {
+            const now = Date.now();
+            if (now - lastClickTime < 500) {
+              const newCount = clickCount + 1;
+              setClickCount(newCount);
+              if (newCount >= 4) {
+                onShowDashboard();
+                setClickCount(0);
+              }
+            } else {
+              setClickCount(1);
+            }
+            setLastClickTime(now);
+          }}
           className="text-2xl font-display font-bold text-gradient uppercase"
         >
           {import.meta.env.VITE_APP_TITLE || 'SARAVANAN'}
@@ -489,9 +508,12 @@ const Contact = () => {
 };
 
 function App() {
+  const [showDashboard, setShowDashboard] = useState(false);
+
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <VisitorTracker />
+      <Navbar onShowDashboard={() => setShowDashboard(true)} />
       <Hero />
       <div id="about">
         <section className="py-24 overflow-hidden">
@@ -557,6 +579,7 @@ function App() {
         </div>
       </footer>
       <AIChatAssistant />
+      <VisitorDashboard isOpen={showDashboard} onClose={() => setShowDashboard(false)} />
     </div>
   );
 }
