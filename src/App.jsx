@@ -21,6 +21,7 @@ import {
 import AIChatAssistant from './components/AIChatAssistant';
 import VisitorTracker from './components/VisitorTracker';
 import VisitorDashboard from './components/VisitorDashboard';
+import profileImg from './assets/img.png';
 
 const Navbar = ({ onShowDashboard }) => {
   const [clickCount, setClickCount] = useState(0);
@@ -436,15 +437,15 @@ const Contact = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <a href="mailto:contact@saravanan.dev" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
+          <a href="mailto:saravanankanagaraj02@gmail.com" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
             <Mail className="text-primary" size={32} />
             <span className="font-semibold text-slate-300">Email Me</span>
           </a>
-          <a href="#" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
+          <a href="https://www.linkedin.com/in/saravanan-k-044a45226/" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
             <Linkedin className="text-primary" size={32} />
             <span className="font-semibold text-slate-300">LinkedIn</span>
           </a>
-          <a href="#" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
+          <a href="https://github.com/saravanan172" className="glass p-6 rounded-2xl flex flex-col items-center gap-4 hover:bg-white/15 transition-all">
             <Github className="text-primary" size={32} />
             <span className="font-semibold text-slate-300">GitHub</span>
           </a>
@@ -525,9 +526,18 @@ function App() {
                 viewport={{ once: true }}
                 className="relative"
               >
-                <div className="aspect-square rounded-3xl overflow-hidden glass">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 animate-gradient-x" />
-                  <div className="absolute inset-0 flex items-center justify-center">
+                <div className="aspect-square rounded-3xl overflow-hidden glass relative group/img">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 animate-gradient-x opacity-50 transition-opacity group-hover/img:opacity-30" />
+                  <img
+                    src={profileImg}
+                    alt="Saravanan"
+                    className="w-full h-full object-cover relative z-10 transition-transform duration-700 group-hover/img:scale-110"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center hidden">
                     <Code2 size={120} className="text-white/20" />
                   </div>
                 </div>
