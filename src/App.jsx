@@ -596,8 +596,8 @@ const Achievements = () => {
   const stats = [
     { number: githubStats.repos, label: "PROJECTS\nCOMPLETED" },
     { number: githubStats.commits, label: "GITHUB COMMITS" },
-    { number: "15+", label: "TECHNOLOGIES\nMASTERED" },
-    { number: "1+", label: "YEARS\nEXPERIENCE" }
+    { number: "100+", label: "TECHNOLOGIES\nMASTERED" },
+    { number: "2+", label: "YEARS\nEXPERIENCE" }
   ];
 
   return (
