@@ -22,6 +22,7 @@ import AIChatAssistant from './components/AIChatAssistant';
 import VisitorTracker from './components/VisitorTracker';
 import VisitorDashboard from './components/VisitorDashboard';
 import profileImg from './assets/img.png';
+import emailjs from '@emailjs/browser';
 
 const Navbar = ({ onShowDashboard }) => {
   const [clickCount, setClickCount] = useState(0);
@@ -339,7 +340,7 @@ const Certificates = () => {
   const certificates = [
     {
       title: "Java Full Stack Development",
-      issuer: "Udemy Professional",
+      issuer: "HackerRank",
       date: "2024",
       icon: <Code2 className="text-primary" />
     },
@@ -421,10 +422,34 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setStatus('sending');
-    setTimeout(() => {
-      setStatus('sent');
-      e.target.reset();
-    }, 1500);
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      console.error('EmailJS configuration missing');
+      setStatus('error');
+      return;
+    }
+
+    const formData = new FormData(e.target);
+    const templateParams = {
+      from_name: formData.get('user_name'),
+      from_email: formData.get('user_email'),
+      message: formData.get('message'),
+      to_name: 'Saravanan',
+    };
+
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+        console.log('SUCCESS!', response.status, response.text);
+        setStatus('sent');
+        e.target.reset();
+      }, (err) => {
+        console.error('FAILED...', err);
+        setStatus('error');
+      });
   };
   return (
     <section id="contact" className="py-24 bg-slate-900/50">
@@ -483,15 +508,15 @@ const Contact = () => {
               >
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-400">Name</label>
-                  <input required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors" />
+                  <input name="user_name" required type="text" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-400">Email</label>
-                  <input required type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors" />
+                  <input name="user_email" required type="email" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors" />
                 </div>
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-sm font-semibold text-slate-400">Message</label>
-                  <textarea required rows="4" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors"></textarea>
+                  <textarea name="message" required rows="4" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors"></textarea>
                 </div>
                 <button
                   disabled={status === 'sending'}
@@ -499,9 +524,107 @@ const Contact = () => {
                 >
                   {status === 'sending' ? 'Sending...' : 'Send Message'}
                 </button>
+                {status === 'error' && (
+                  <p className="text-red-400 text-sm mt-2">Failed to send message. Please check EmailJS configuration.</p>
+                )}
               </motion.form>
             )}
           </AnimatePresence>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Achievements = () => {
+  const [githubStats, setGithubStats] = useState({ repos: "25+", commits: "100+" });
+
+  useEffect(() => {
+    const fetchGithubData = async () => {
+      try {
+        // Fetch user's repositories
+        const reposResponse = await fetch('https://api.github.com/users/saravanan172/repos?per_page=100');
+        if (!reposResponse.ok) return;
+        const repos = await reposResponse.json();
+        
+        // Calculate total commits across repositories
+        let totalCommits = 0;
+        
+        // Due to rate limits on anonymous API calls, we'll only fetch commits for the top 5 most recently updated repos
+        // This gives a good approximation without hitting the 60 requests/hour limit quickly
+        const recentRepos = repos
+          .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+          .slice(0, 5);
+
+        await Promise.all(recentRepos.map(async (repo) => {
+          try {
+            const commitsResponse = await fetch(`https://api.github.com/repos/saravanan172/${repo.name}/commits?per_page=1`);
+            if (commitsResponse.ok) {
+              // The 'link' header tells us how many pages of commits there are (which equals total commits since per_page=1)
+              const linkHeader = commitsResponse.headers.get('link');
+              if (linkHeader) {
+                const match = linkHeader.match(/page=(\d+)>; rel="last"/);
+                if (match) {
+                  totalCommits += parseInt(match[1], 10);
+                } else {
+                  totalCommits += 1;
+                }
+              } else {
+                // If there's no link header, there's only 1 commit OR we got a single page result
+                const commits = await commitsResponse.json();
+                totalCommits += commits.length;
+              }
+            }
+          } catch (e) {
+            console.error(`Failed to fetch commits for ${repo.name}`, e);
+          }
+        }));
+
+        setGithubStats({
+          repos: `${repos.length}+`,
+          commits: `${totalCommits > 100 ? Math.floor(totalCommits / 100) * 100 + '+' : totalCommits + '+'}`
+        });
+
+      } catch (error) {
+        console.error('Failed to fetch GitHub stats:', error);
+      }
+    };
+
+    fetchGithubData();
+  }, []);
+
+  const stats = [
+    { number: githubStats.repos, label: "PROJECTS\nCOMPLETED" },
+    { number: githubStats.commits, label: "GITHUB COMMITS" },
+    { number: "15+", label: "TECHNOLOGIES\nMASTERED" },
+    { number: "1+", label: "YEARS\nEXPERIENCE" }
+  ];
+
+  return (
+    <section className="py-12 relative z-20">
+      <div className="container mx-auto px-6">
+        <div className="flex justify-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl w-full">
+            {stats.map((stat, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className={`relative p-8 px-6 rounded-2xl flex flex-col items-center justify-center text-center bg-[#18181b] border transition-all duration-300 hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.2)] group cursor-default ${
+                  i === 0 ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.2)]' : 'border-[#27272a]'
+                }`}
+              >
+                <div className="text-4xl md:text-5xl font-bold text-cyan-400 mb-4 font-display group-hover:scale-110 transition-transform">
+                  {stat.number}
+                </div>
+                <div className="text-xs tracking-widest text-[#a1a1aa] font-semibold whitespace-pre-line leading-relaxed uppercase">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -581,6 +704,7 @@ function App() {
       <Skills />
       <Certificates />
       <Projects />
+      <Achievements />
       <Contact />
 
       <footer className="py-12 border-t border-white/5 text-center text-slate-500">
